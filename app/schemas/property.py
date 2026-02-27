@@ -14,6 +14,9 @@ class PropertyBase(BaseModel):
     station_distance: int = Field(..., description="駅徒歩（分）")
     floor: int = Field(default=1, description="所在階") # 1階をデフォルトに
     floor_plan: str
+    monthly_fee: Optional[float] = Field(None,description="家賃+管理費")
+    estimated_price: Optional[float] = Field(None,description="推測値")
+    divergence_rate: Optional[float] = Field(None,description="乖離率")
 
 # スクレイピング時に作成するためのスキーマ
 class PropertyCreate(PropertyBase):
@@ -26,6 +29,7 @@ class PropertyRead(PropertyBase):
     estimated_price: Optional[float] = None
     divergence_rate: Optional[float] = None
     created_at: datetime
+    diff_amount: Optional[float] = None
 
     class Config:
         from_attributes = True # SQLAlchemyのモデルをPydanticに変換可能にする

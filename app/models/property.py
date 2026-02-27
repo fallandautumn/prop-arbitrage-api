@@ -22,6 +22,8 @@ class Property(Base):
     estimated_price = Column(Float, nullable=True) # 重回帰で算出した理論価格
     divergence_rate = Column(Float, nullable=True) # 乖離率（（理論-実際）/理論）
     monthly_fee = Column(Float,nullable=True)      #家賃+管理費
-    
+    estimated_price = Column(Float,nullable=True)  # AIの予測値（保存済み）
+    divergence_rate = Column(Float,nullable=True)  # 乖離率（保存済み）
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

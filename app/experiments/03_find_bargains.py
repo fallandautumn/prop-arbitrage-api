@@ -45,7 +45,7 @@ if __name__ == "__main__":
     display_cols = ['title', 'total_fee', 'predicted_fee', 'diff_amount', 'age', 'liv_area','floor','building_type']
     # print(bargains[display_cols].head(10).to_string(index=False))
 
-    my_budget_list = bargains[(bargains['total_fee'] < 120000) & (bargains['floor']>1)]
+    my_budget_list = bargains[(bargains['total_fee'] < 180000) & (bargains['floor']>1)]
 
 # 2. 面積のタイポ（飯田橋事件）を完全に排除したい
     clean_list = my_budget_list[my_budget_list['liv_area'] < 100]

@@ -12,3 +12,5 @@ ml_models/*.joblib
 
 # OS
 .DS_Store
+
+*.log

@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.crud import property as crud_property
 from app.services.scraper import SuumoScraper
 from app.schemas.property import PropertyRead
 import logging
-from typing import List
+from typing import List, Optional
 from time import sleep
-from app.services.analytics import PriceAnalyzer
+# analytics_v2.py を analytics.py として保存している想定
+from app.services.analytics_v2 import PriceAnalyzerV2 
 from app.models.property import Property
 
 logger = logging.getLogger(__name__)
@@ -39,11 +40,11 @@ def read_properties(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 @router.post("/analyze")
 def run_analysis(db: Session = Depends(get_db)):
     """
-    DB内のデータを用いて回帰モデルを学習し、
-    全物件の理論価格と乖離率を更新します。
+    【V2】全データを使って再学習し、DBの理論価格を最新状態に更新します。
     """
-    analyzer = PriceAnalyzer(db)
-    updated_count = analyzer.update_estimated_prices()
+    analyzer = PriceAnalyzerV2(db)
+
+    updated_count = analyzer.analyze_and_update() 
     
     if updated_count == 0:
         return {"status": "skipped", "message": "Not enough data to analyze."}
@@ -51,17 +52,31 @@ def run_analysis(db: Session = Depends(get_db)):
     return {
         "status": "success", 
         "updated_count": updated_count,
-        "message": f"Successfully updated {updated_count} properties."
+        "message": f"Successfully updated {updated_count} properties using V2 Logic."
     }
 
 @router.get("/bargains", response_model=List[PropertyRead])
-def get_bargain_properties(limit: int = 10, db: Session = Depends(get_db)):
+def get_bargain_properties(
+    budget: int = Query(180000, description="家賃＋管理費の合計上限"),
+    min_floor: int = Query(2, description="最低階数（1階除外など）"),
+    max_area: int = Query(100, description="面積上限（タイポ対策）"),
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
     """
-    乖離率が低い（お買い得な）物件を順に返します。
+    【V2】統計的に「安すぎる」と判定された物件を、指定条件でフィルタリングして返します。
     """
-    # divergence_rate が NULL でないものを、昇順（安い順）で取得
-    return db.query(Property)\
-            .filter(Property.divergence_rate != None)\
-            .order_by(Property.divergence_rate.asc())\
-            .limit(limit)\
-            .all()
+    analyzer = PriceAnalyzerV2(db)
+    
+    # 修正ポイント: 
+    # 1. 重複していた呼び出しを1回に統合
+    # 2. analytics_v2.py 内で limit まで処理を完結させる
+    results = analyzer.get_bargains(
+        budget=budget, 
+        min_floor=min_floor, 
+        max_area=max_area,
+        limit=limit
+    )
+    
+    # すでに analytics_v2.py 内で list[dict] になっているのでそのまま返す
+    return results

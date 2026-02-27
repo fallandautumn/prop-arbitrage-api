@@ -12,9 +12,6 @@ def load_and_preprocess_data(db_url: str):
     df['total_fee'] = (df['price'] + df['admin_fee'])*10000
     df = df[df['age'] > 0]
 
-    # 1. 重複排除（ここを最初に入れる！）
-    # タイトル、面積、階数、家賃が同じなら同一物件とみなす
-    df = df.drop_duplicates(subset=['title'])
 
     # フィルタリング（部分一致）
     df = df[df['building_type'].str.contains('マンション|アパート', na=False)].copy()
