@@ -24,7 +24,9 @@ class PriceAnalyzerV2:
         
         features = ['age', 'log_liv_area', 'station_distance', 'floor']
         model = LinearRegression().fit(df_clean[features], df_clean['log_total_fee'])
-
+        r2 = model.score(df_clean[features], df_clean['log_total_fee'])
+        print(f"【モデル精度】決定係数 R^2: {r2:.4f}")
+        logger.info(f"Model trained with R^2: {r2:.4f}")
         all_properties = self.db.query(Property).all()
         
         update_data = []

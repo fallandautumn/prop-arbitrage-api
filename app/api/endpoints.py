@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.crud import property as crud_property
-from app.services.scraper import SuumoScraper
+from app.services.scraper_v2 import SuumoScraperV2
 from app.schemas.property import PropertyRead
 import logging
 from typing import List, Optional
@@ -18,7 +18,7 @@ router = APIRouter()
 @router.post("/scrape", response_model=List[PropertyRead])
 def run_scraping(pages: int = 60, db: Session = Depends(get_db)):
     # 1. スクレイピング実行（SUUMO版）
-    scraper = SuumoScraper()
+    scraper = SuumoScraperV2()
     all_properties = []
     
     for p in range(1, pages + 1):
