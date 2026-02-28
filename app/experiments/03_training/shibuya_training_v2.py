@@ -39,6 +39,7 @@ print(f"\n【渋谷専用モデルの精度結果】")
 print(f"R2 Score: {r2:.4f}")
 
 # 5. モデル保存（新宿版と分ける）
-os.makedirs("models", exist_ok=True)
-joblib.dump(model, "models/shibuya_base_v2.pkl")
-print("渋谷モデルを 'models/shibuya_base_v2.pkl' として保存しました。")
+SAVE_DIR = "../../../ml_models"
+os.makedirs(SAVE_DIR, exist_ok=True)
+joblib.dump(model, f"{SAVE_DIR}/shibuya_base_v2.pkl")
+print(f"渋谷モデルを '{SAVE_DIR}/shibuya_base_v2.pkl' として保存しました。")

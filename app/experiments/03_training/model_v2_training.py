@@ -75,9 +75,9 @@ if __name__ == "__main__":
     print("="*30)
 
     # モデルをファイルとして保存（永続化）
-    os.makedirs("models", exist_ok=True)
-    joblib.dump(model, "models/shinjuku_base_v2.pkl")
+    SAVE_DIR = "../../../ml_models"
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    joblib.dump(model, f"{SAVE_DIR}/shinjuku_base_v2.pkl")
 
     print("\n" + "!"*30)
-    print("新宿最強モデルを 'models/shinjuku_base_v2.pkl' に結晶化しました。")
-    print("!"*30)
+    print(f"新宿モデルを '{SAVE_DIR}/shinjuku_base_v2.pkl' に結晶化しました。")
