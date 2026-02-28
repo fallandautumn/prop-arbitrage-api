@@ -8,11 +8,12 @@ from app.schemas.property import PropertyCreate
 logger = logging.getLogger(__name__)
 
 class SuumoScraper:
-    def __init__(self):
-        self.base_url = "https://suumo.jp/chintai/tokyo/sc_shinjuku/"
+    def __init__(self,area_name='shinjuku'):
+        self.base_url = f"https://suumo.jp/chintai/tokyo/sc_{area_name}/"
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
         }
+        logger.info(f"Scraper intitialized for area: {area_name}")
 
     def _extract_text(self, element, selector, default="") -> str:
         found = element.select_one(selector)

@@ -5,10 +5,11 @@ from sklearn.metrics import r2_score, mean_absolute_error
 import sys
 import os
 from dotenv import load_dotenv
+import joblib
 
 load_dotenv()
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 from app.services.preprocess import load_and_preprocess_data, get_train_val_test_split
 
 DB_URL = os.getenv("DATABASE_URL")
@@ -27,9 +28,6 @@ if __name__ == "__main__":
 
     # 重複を排除した後の件数
 
-    a = df[df['admin_fee'] > 0]
-    print(f"管理費が０以上の物件数：{len(a)}")
-
     # 2. 特徴量の選択（今回は対数面積を含む基本セット）
     features = ['age', 'log_liv_area', 'station_distance',"floor"]
     target = 'log_total_fee'
@@ -44,8 +42,8 @@ if __name__ == "__main__":
     model = LinearRegression()
     model.fit(X_train, y_train) 
 
-    # # 4. 予測と逆変換
-    # # 予測値も「対数」なので、expを使って「円」に戻す必要がある
+    # 4. 予測と逆変換
+    # 予測値も「対数」なので、expを使って「円」に戻す必要がある
     # log_pred = model.predict(X_val)
     # y_pred_won = np.expm1(log_pred)  # 円に戻す
     # y_val_won = np.expm1(y_val)     # 実際の値も円に戻す
@@ -70,7 +68,16 @@ if __name__ == "__main__":
     test_r2 = r2_score(y_test, log_test_pred)
 
     print("\n" + "="*30)
+    
     print("【最終試験：テスト用データの結果】")
     print(f"最終精度 (R2 Score): {test_r2:.4f}")
     print(f"最終誤差 (MAE): {test_mae:.0f} 円")
     print("="*30)
+
+    # モデルをファイルとして保存（永続化）
+    os.makedirs("models", exist_ok=True)
+    joblib.dump(model, "models/shinjuku_base_v2.pkl")
+
+    print("\n" + "!"*30)
+    print("新宿最強モデルを 'models/shinjuku_base_v2.pkl' に結晶化しました。")
+    print("!"*30)

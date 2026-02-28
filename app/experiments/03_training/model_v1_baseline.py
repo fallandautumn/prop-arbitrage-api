@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # --- インポートエラー対策（おまじない） ---
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 
 logger = logging.getLogger(__name__)
 

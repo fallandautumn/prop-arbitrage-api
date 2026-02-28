@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # プロジェクトルートをパスに追加
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 
 # 自作した部品をインポート
 from app.services.preprocess import load_and_preprocess_data, get_train_val_test_split
